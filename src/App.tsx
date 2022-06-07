@@ -1,12 +1,20 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.css';
-
+import { Provider } from 'react-redux';
+import store from './store';
+import { useEffect, useRef } from 'react'
+import { mapService } from './map/map'
 function App() {
+  const mapContainer = useRef(null);
+  useEffect(() => {
+    let map = new mapService(mapContainer);
+  }, [])
   return (
-    <div className="App">
-      Hola Gio
-    </div>
+    <Provider store={store}>
+      <div className="App">
+        Hola Gio
+        <div ref={mapContainer}></div>
+      </div>
+    </Provider>
   );
 }
 

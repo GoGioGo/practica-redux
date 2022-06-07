@@ -3,7 +3,6 @@ import { replaceAppUser } from '../actions';
 import { resetAppUser } from '../actions';
 import { User } from '../../constants/user';
 
-
 export const useAppUserState = () => useSelector(
   (rootState: { appUser: any }) => rootState.appUser
 );
