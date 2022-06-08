@@ -1,7 +1,7 @@
-import * as types from '../types/mapTypes'
+import * as TYPES from '../types/'
 import store from '..';
 
 export const getMapLayers = (trigger: any, tiles: any) => ({
-    type: types.GET_MAP_LAYERS,
+    type: TYPES.GET_MAP_LAYERS,
     data: { trigger, tiles }
 });

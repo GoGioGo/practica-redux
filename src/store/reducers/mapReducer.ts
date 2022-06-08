@@ -1,4 +1,5 @@
-import * as types from '../types/mapTypes';
+import * as types from '../types/';
+
 import { PROJECTS_MAP_STYLES, PROBLEMS_TRIGGER, STREAMS_FILTERS, MHFD_BOUNDARY_FILTERS, XSTREAMS } from '../../constants/constants';
 
 const initState = {
@@ -463,8 +464,6 @@ const mapReducer = (state = initState, action: any) => {
                 projectsByType: action.filteredProjects
             }
         case types.GET_MAP_LAYERS:
-            console.log('state resivido =====>>> supongo trigger', state)
-            console.log('action recivido como tiles =====?>>>  ', action);
             return {
                 ...state,
                 layers: {

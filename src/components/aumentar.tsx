@@ -1,4 +1,7 @@
-import { useAppUserDispatch } from '../store/hooks/appUserHook'
+import { useAppUserDispatch } from '../store/hooks/appUserHook';
+import { useMapState, useMapDispatch } from '../store/hooks/mapsHooks';
+import { useEffect } from 'react';
+import { SELECT_ALL_FILTERS } from '../map/constants';
 
 function Aumentar() {
     let birthday = new Date(1995, 11, 17)
@@ -29,9 +32,26 @@ function Aumentar() {
     }
     const { replaceAppUser } = useAppUserDispatch();
 
+    let b = 'prueba';
+    let c = ['uno', 'dos'];
+
+    const { getMapLayers } = useMapDispatch();
+
+    //const { detailed } = useMapState();
+    // useEffect(() => {
+    //     let da = fetch('https://confdevbc.mhfd.org', {
+    //         method: 'POST',
+    //         headers,
+    //         body: JSON.stringify({ table: any })
+    //     })
+    // }, []);
+
     return <>
         <div>
-            <button onClick={() => replaceAppUser(a)}>Aumentar</button>
+            <button onClick={() => {
+                replaceAppUser(a);
+                getMapLayers(b, c);
+            }}>Aumentar</button>
         </div>
     </>
 }

@@ -1,8 +1,7 @@
 import { useSelector, useDispatch } from 'react-redux';
-
 import {
   getMapLayers
-} from '../storee/actions/mapActions';
+} from '../actions/mapActions';
 
 export const useMapState = () => useSelector(
   (state: { map: any }) => state.map
