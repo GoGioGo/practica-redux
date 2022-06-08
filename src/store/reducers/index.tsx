@@ -2,7 +2,7 @@ import { combineReducers } from 'redux';
 import appUserReducer from './appUserReducer';
 
 export const reducers = {
-  appUser: appUserReducer,
+  appUserReducer,
 };
 
 export default combineReducers(reducers);

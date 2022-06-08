@@ -1,6 +1,5 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { replaceAppUser } from '../actions';
-import { resetAppUser } from '../actions';
+import { replaceAppUser, resetAppUser } from '../actions/appUserAction';
 import { User } from '../../constants/user';
 
 export const useAppUserState = () => useSelector(
@@ -10,8 +9,8 @@ export const useAppUserState = () => useSelector(
 export const useAppUserDispatch = () => {
   const dispatch = useDispatch();
   return {
-    setAppUserState: (appUser: User) => {
-      dispatch(replaceAppUser(appUser));
-    },
+    // replaceAppUser: (appUser: User) => {
+    //   dispatch(replaceAppUser(appUser));
+    // },
   };
 };

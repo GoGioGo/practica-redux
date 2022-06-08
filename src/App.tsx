@@ -1,6 +1,6 @@
 import './App.css';
 import { Provider } from 'react-redux';
-import store from './store';
+import store from './storee';
 import { useEffect, useRef } from 'react'
 import { mapService } from './map/map'
 function App() {
