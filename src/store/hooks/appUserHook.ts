@@ -8,9 +8,10 @@ export const useAppUserState = () => useSelector(
 
 export const useAppUserDispatch = () => {
   const dispatch = useDispatch();
+  const replaceAppUserFn: any = replaceAppUser;
   return {
-    // replaceAppUser: (appUser: User) => {
-    //   dispatch(replaceAppUser(appUser));
-    // },
+    replaceAppUser: (appUser: User) => {
+      dispatch(replaceAppUserFn(appUser));
+    },
   };
 };
