@@ -4,7 +4,7 @@ import {
 } from '../actions/mapActions';
 
 export const useMapState = () => useSelector(
-  (state: { map: any }) => state.map
+  (state: { mapReducer: any }) => state.mapReducer
 );
 
 export const useMapDispatch = () => {

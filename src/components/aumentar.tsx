@@ -1,9 +1,19 @@
 import { useAppUserDispatch } from '../store/hooks/appUserHook';
 import { useMapDispatch } from '../store/hooks/mapsHooks';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { SELECT_ALL_FILTERS } from '../constants/constants';
+import { useMapState } from '../store/hooks/mapsHooks'
+import { tileStyles } from '../map/mapStyles';
+import { Map } from 'mapbox-gl';
+import 'mapbox-gl/dist/mapbox-gl.css';
+
+let map: any;
 
 function Aumentar() {
+    let si = 0, no = 0;
+    const mapContainer = useRef<any>(null);
+    const { layers } = useMapState();
+
     let birthday = new Date(1995, 11, 17)
     let a = {
         activated: true,
@@ -67,11 +77,79 @@ function Aumentar() {
         })
     }
 
+
+
+    const addLayersSource = (key: string, tiles: Array<String>) => {
+        map.addSource(key, {
+            type: 'vector',
+            tiles: tiles
+        });
+        addTilesLayers(key);
+    }
+
+    const loadSource = () => {
+        SELECT_ALL_FILTERS.forEach(layer => {
+            if (typeof layer === 'object') {
+                if (layer.tiles) {
+                    layer.tiles.forEach(subkey => {
+                        const tiles = layers[layer.name] as any;
+                        if (tiles) {
+                            //addLayersSource(subkey, tiles[subkey]);
+                        }
+                    })
+                }
+            } else {
+                addLayersSource(layer, layers[layer]);
+            }
+        })
+    }
+
+    const addTilesLayers = (key: string) => {
+        const styles = { ...tileStyles as any };
+
+        styles[key].forEach((style: any, index: number) => {
+
+            if (style.source_name) {
+                map.addLayer({
+                    id: key + '_' + index,
+                    source: style.source_name,
+                    ...style
+                });
+            } else {
+
+
+                // map.addLayer({
+                //     id: key + '_' + index,
+                //     source: key,
+                //     ...style
+                // });
+            }
+        })
+    }
+
+    useEffect(() => {
+        map = new Map({
+            container: mapContainer.current,
+            style: 'mapbox://styles/mapbox/streets-v11',
+            center: [-77.08368301391602, 38.89009754221234],
+            zoom: 12,
+            accessToken: 'pk.eyJ1IjoibWlsZWhpZ2hmZCIsImEiOiJjazRqZjg1YWQwZTN2M2RudmhuNXZtdWFyIn0.oU_jVFAr808WPbcVOFnzbg'
+        })
+    }, [])
+
     return <>
+        <div ref={mapContainer} id="mapa" style={{ width: 800, height: 800 }}></div>
         <div>
-            <button onClick={() => {
-                changes();
-            }}>Aumentar</button>
+            <div>
+                <button onClick={() => {
+                    changes();
+                }}>Aumentar</button>
+            </div>
+            <div>
+                <button onClick={() => {
+                    loadSource();
+                }}>ver</button>
+            </div>
         </div>
     </>
 }
