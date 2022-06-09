@@ -1,7 +1,6 @@
 import { useAppUserDispatch } from '../store/hooks/appUserHook';
-import { useMapState, useMapDispatch } from '../store/hooks/mapsHooks';
+import { useMapDispatch } from '../store/hooks/mapsHooks';
 import { useEffect } from 'react';
-import { SELECT_ALL_FILTERS } from '../map/constants';
 
 function Aumentar() {
     let birthday = new Date(1995, 11, 17)
@@ -38,13 +37,18 @@ function Aumentar() {
     const { getMapLayers } = useMapDispatch();
 
     //const { detailed } = useMapState();
-    // useEffect(() => {
-    //     let da = fetch('https://confdevbc.mhfd.org', {
-    //         method: 'POST',
-    //         headers,
-    //         body: JSON.stringify({ table: any })
-    //     })
-    // }, []);
+    useEffect(() => {
+        let headers = new Headers();
+        let token = 'GUEST';
+        headers.append('Content-Type', 'application/json');
+        headers.append('Authorization', 'Bearer ' + token);
+        fetch('https://confdevbc.mhfd.org/map', {
+            method: 'POST',
+            headers,
+            body: JSON.stringify({ table: "floodplains_non_fema" })
+        }).then(resp => resp.json())
+            .then(data => console.log(data))
+    }, []);
 
     return <>
         <div>
