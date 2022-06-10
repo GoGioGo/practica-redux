@@ -102,7 +102,14 @@ function Aumentar() {
                 addLayersSource(layer, layers[layer]);
             }
         });
-        selectedLayers.array.forEach((element: any) => {
+
+    }
+
+    const mostrarLayers = () => {
+        console.log('llego hasta aqui...', selectedLayers)
+        let i = 0;
+        selectedLayers.forEach((element: any) => {
+            console.log('llego hasta aqui ', i, 'veces')
             if (typeof element === 'object') {
                 element.tiles.forEach((subkey: string) => {
                     showLayers(subkey);
@@ -112,7 +119,6 @@ function Aumentar() {
             }
         });
     }
-
     const showLayers = (key: string) => {
         const styles = { ...tileStyles as any };
         styles[key].forEach((style: any, index: number) => {
@@ -127,7 +133,6 @@ function Aumentar() {
         const styles = { ...tileStyles as any };
 
         styles[key].forEach((style: any, index: number) => {
-            console.log('style == ', style);
             if (style.source_name) {
                 map.addLayer({
                     id: key + '_' + index,
@@ -141,6 +146,7 @@ function Aumentar() {
                     ...style
                 });
             }
+            map.setLayoutProperty(key + '_' + index, 'visibility', 'none');
         })
     }
 
@@ -167,6 +173,11 @@ function Aumentar() {
                 <button onClick={() => {
                     loadSource();
                 }}>ver</button>
+            </div>
+            <div>
+                <button onClick={() => {
+                    mostrarLayers();
+                }}>mostrarLayers Iniciales</button>
             </div>
         </div>
     </>
