@@ -12,7 +12,7 @@ let map: any;
 function Aumentar() {
     let si = 0, no = 0;
     const mapContainer = useRef<any>(null);
-    const { layers } = useMapState();
+    const { layers, selectedLayers } = useMapState();
 
     let birthday = new Date(1995, 11, 17)
     let a = {
@@ -94,21 +94,40 @@ function Aumentar() {
                     layer.tiles.forEach(subkey => {
                         const tiles = layers[layer.name] as any;
                         if (tiles) {
-                            //addLayersSource(subkey, tiles[subkey]);
+                            addLayersSource(subkey, tiles[subkey]);
                         }
                     })
                 }
             } else {
                 addLayersSource(layer, layers[layer]);
             }
-        })
+        });
+        selectedLayers.array.forEach((element: any) => {
+            if (typeof element === 'object') {
+                element.tiles.forEach((subkey: string) => {
+                    showLayers(subkey);
+                });
+            } else {
+                showLayers(element);
+            }
+        });
     }
+
+    const showLayers = (key: string) => {
+        const styles = { ...tileStyles as any };
+        styles[key].forEach((style: any, index: number) => {
+            if (map.getLayer(key + '_' + index)) {
+                map.setLayoutProperty(key + '_' + index, 'visibility', 'visible');
+            }
+        });
+    };
+
 
     const addTilesLayers = (key: string) => {
         const styles = { ...tileStyles as any };
 
         styles[key].forEach((style: any, index: number) => {
-
+            console.log('style == ', style);
             if (style.source_name) {
                 map.addLayer({
                     id: key + '_' + index,
@@ -116,22 +135,21 @@ function Aumentar() {
                     ...style
                 });
             } else {
-
-
-                // map.addLayer({
-                //     id: key + '_' + index,
-                //     source: key,
-                //     ...style
-                // });
+                map.addLayer({
+                    id: key + '_' + index,
+                    source: key,
+                    ...style
+                });
             }
         })
     }
 
     useEffect(() => {
+        console.log('selectedLayers', selectedLayers)
         map = new Map({
             container: mapContainer.current,
             style: 'mapbox://styles/mapbox/streets-v11',
-            center: [-77.08368301391602, 38.89009754221234],
+            center: [-104.94239335213717, 39.775551711914],
             zoom: 12,
             accessToken: 'pk.eyJ1IjoibWlsZWhpZ2hmZCIsImEiOiJjazRqZjg1YWQwZTN2M2RudmhuNXZtdWFyIn0.oU_jVFAr808WPbcVOFnzbg'
         })
