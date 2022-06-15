@@ -1,5 +1,5 @@
 import { useAppUserDispatch } from '../store/hooks/appUserHook';
-import { useMapDispatch } from '../store/hooks/mapsHooks';
+/*import { useMapDispatch } from '../store/hooks/mapsHooks';
 import { useEffect, useRef } from 'react';
 import { SELECT_ALL_FILTERS } from '../constants/constants';
 import { useMapState } from '../store/hooks/mapsHooks'
@@ -42,7 +42,7 @@ function Aumentar() {
     }
     const { replaceAppUser } = useAppUserDispatch();
 
-    const { getMapLayers } = useMapDispatch();
+    const { getMapLayers, updateSelectedLayers } = useMapDispatch();
 
     const loadData = (tile: any, name?: string) => {
         let headers = new Headers();
@@ -77,7 +77,34 @@ function Aumentar() {
         })
     }
 
+    const selectCheckboxes = (selectedItems: Array<any>) => {
 
+        const deleteLayers = selectedLayers.filter((layer: any) => !selectedItems.includes(layer as string));
+        deleteLayers.forEach((layer: any) => {
+            removeTilesHandler(layer);
+
+        });
+        console.log('selectedItems===>>  ', selectedItems);
+        updateSelectedLayers(selectedItems);
+    }
+
+    const removeTilesHandler = (selectedLayer: any) => {
+        if (typeof selectedLayer === 'object') {
+            selectedLayer.tiles.forEach((subKey: string) => {
+                hideLayers(subKey);
+            });
+        } else {
+            hideLayers(selectedLayer);
+        }
+    }
+    const hideLayers = (key: string) => {
+        const styles = { ...tileStyles as any };
+        styles[key].forEach((style: any, index: number) => {
+            if (map.getLayer(key + '_' + index)) {
+                map.setLayoutProperty(key + '_' + index, 'visibility', 'none');
+            }
+        });
+    };
 
     const addLayersSource = (key: string, tiles: Array<String>) => {
         map.addSource(key, {
@@ -182,4 +209,4 @@ function Aumentar() {
         </div>
     </>
 }
-export default Aumentar
+export default Aumentar*/

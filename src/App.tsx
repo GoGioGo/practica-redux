@@ -1,22 +1,11 @@
 import { Provider } from 'react-redux';
 import store from './store';
-// import { useEffect, useRef } from 'react'
-//import { mapService } from './map/map';
-import Aumentar from './components/aumentar';
 import { useEffect, useRef } from 'react'
-import { Map } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { SELECT_ALL_FILTERS } from './constants/constants'
-//import { useMapState } from './store/hooks/mapsHooks'
 import { tileStyles } from './map/mapStyles';
-
-// let map: any;
-// let mapa = "mapa"
+import MapLayout from './map/map';
 function App() {
-
-  // const { layers } = useMapState();
-
-  //const mapContainer = useRef<any>(null);
 
   // const addLayersSource = (key: string, tiles: Array<String>) => {
   //   if (!map.getSource(key)) {
@@ -78,13 +67,9 @@ function App() {
 
   return (
     <Provider store={store}>
-      {/* <div ref={mapContainer} id="mapa" style={{ width: 800, height: 800 }}></div> */}
       <div>
-        <Aumentar />
+        <MapLayout />
       </div>
-      {/* <div>
-        <button onClick={() => loadSource()}>cargar</button>
-      </div> */}
     </Provider>
   );
 }
