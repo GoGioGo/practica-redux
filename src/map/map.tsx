@@ -42,45 +42,6 @@ const MapLayout = () => {
         polygon: [],
         createdAt: birthday
     }
-    const { replaceAppUser } = useAppUserDispatch();
-
-    const { getMapLayers, updateSelectedLayers } = useMapDispatch();
-
-
-    const hideLayers = (key: string) => {
-        const styles = { ...tileStyles as any };
-        styles[key].forEach((style: any, index: number) => {
-            if (map.getLayer(key + '_' + index)) {
-                map.setLayoutProperty(key + '_' + index, 'visibility', 'none');
-            }
-        });
-    };
-
-    const addLayersSource = (key: string, tiles: Array<String>) => {
-        map.addSource(key, {
-            type: 'vector',
-            tiles: tiles
-        });
-        addTilesLayers(key);
-    }
-
-    const loadSource = () => {
-        SELECT_ALL_FILTERS.forEach(layer => {
-            if (typeof layer === 'object') {
-                if (layer.tiles) {
-                    layer.tiles.forEach(subkey => {
-                        const tiles = layers[layer.name] as any;
-                        if (tiles) {
-                            addLayersSource(subkey, tiles[subkey]);
-                        }
-                    })
-                }
-            } else {
-                addLayersSource(layer, layers[layer]);
-            }
-        });
-
-    }
 
     const mostrarLayers = () => {
         let i = 0;
@@ -104,29 +65,6 @@ const MapLayout = () => {
     };
 
 
-    const addTilesLayers = (key: string) => {
-        const styles = { ...tileStyles as any };
-
-        styles[key].forEach((style: any, index: number) => {
-
-
-            if (style.source_name) {
-                map.addLayer({
-                    id: key + '_' + index,
-                    source: style.source_name,
-                    ...style
-                });
-            } else {
-                map.addLayer({
-                    id: key + '_' + index,
-                    source: key,
-                    ...style
-                });
-            }
-            map.setLayoutProperty(key + '_' + index, 'visibility', 'none');
-        })
-    }
-
     const loadInitialLayer = () => {
         lynames.forEach((layer) => {
             LoadSource(layer)
@@ -135,36 +73,18 @@ const MapLayout = () => {
                         type: 'vector',
                         tiles: result
                     });
-                    cargarLayers(layer);
+                    const styles = { ...tileStyles as any };
+                    styles[layer].forEach((style: any, index: number) => {
+                        map.addLayer({
+                            id: layer + '_' + index,
+                            source: layer,
+                            ...style
+                        });
+                    })
                 })
-            verifiedLoadSource(layer)
-                .then(data => {
-                    if (data) {
-                        const styles = { ...tileStyles as any };
-                        styles[layer].forEach((style: any, index: number) => {
-                            if (style.source_name) {
-                                map.addLayer({
-                                    id: layer + '_' + index,
-                                    source: style.source_name,
-                                    ...style
-                                });
-                            } else {
-                                map.addLayer({
-                                    id: layer + '_' + index,
-                                    source: layer,
-                                    ...style
-                                });
-                            }
-                        })
-                    }
+                .catch(error => {
+                    console.log('error', error.message)
                 })
-        })
-    }
-    const verifiedLoadSource = (layer: any) => {
-        return new Promise(resolve => {
-            if (map.getSource(layer)) {
-                resolve(true);
-            }
         })
     }
 
@@ -174,13 +94,16 @@ const MapLayout = () => {
         headers.append('Content-Type', 'application/json');
         headers.append('Authorization', 'Bearer ' + token);
 
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
             (fetch('https://confdevbc.mhfd.org/map', {
                 method: 'POST',
                 headers,
                 body: JSON.stringify({ table: layer })
             })
                 .then(resp => resp.json())
+                .catch(error => {
+                    reject(error);
+                })
                 .then(data => {
                     resolve(data)
                 }))
@@ -188,36 +111,13 @@ const MapLayout = () => {
     }
 
 
-    const cargarLayers = (key: any) => {
-        console.log('dentro de la carga el layer es = ', key)
-        const styles = { ...tileStyles as any };
-        console.log('styles[key] ====>>  ', styles[key])
-        styles[key].forEach((style: any, index: number) => {
-            console.log('style', style, 'index', index);
-            if (style.source_name) {
-                map.addLayer({
-                    id: key + '_' + index,
-                    source: style.source_name,
-                    ...style
-                });
-            } else {
-                map.addLayer({
-                    id: key + '_' + index,
-                    source: key,
-                    ...style
-                });
-            }
-            map.setLayoutProperty(key + '_' + index, 'visibility', 'none');
-        })
 
-    }
 
     const isMapLoaded = () => {
         return new Promise(resolve => {
             map.on('load', () => {
                 resolve(true);
             })
-
         })
     }
 
@@ -231,19 +131,13 @@ const MapLayout = () => {
         })
         isMapLoaded()
             .then(data => {
-                loadInitialLayer();
-                mostrarLayers();
+                if (data) {
+                    loadInitialLayer();
+                }
             })
     }, [])
     return <>
         <div ref={mapContainer} style={{ width: 1000, height: 800 }}>
-        </div>
-        <div>
-            <div>
-                <button onClick={() => {
-                    mostrarLayers();
-                }}>mostrarLayers Iniciales</button>
-            </div>
         </div>
     </>
 }
