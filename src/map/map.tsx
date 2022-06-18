@@ -6,11 +6,10 @@ import { useMapState } from '../store/hooks/mapsHooks'
 import { tileStyles } from '../map/mapStyles';
 import { Map } from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { resolve } from 'path';
 
 let map: any;
 const MapLayout = () => {
-    const lynames = ['district_boundary', 'streams', 'problems'];
+    const lynames = ['district_boundary', 'streams', 'problems', 'error'];
     const [loading, setLoading] = useState(false);
     const mapContainer = useRef<HTMLDivElement>(null)
 
@@ -44,6 +43,8 @@ const MapLayout = () => {
     }
 
     const mostrarLayers = () => {
+        console.log('selectedLayers===>> ', selectedLayers)
+
         let i = 0;
         selectedLayers.forEach((element: any) => {
             if (typeof element === 'object') {
@@ -105,12 +106,64 @@ const MapLayout = () => {
                     reject(error);
                 })
                 .then(data => {
+
                     resolve(data)
                 }))
         })
     }
 
 
+    const loadSourceAndLayer = (layer: any) => {
+        let headers = new Headers();
+        let token = 'GUEST';
+        headers.append('Content-Type', 'application/json');
+        headers.append('Authorization', 'Bearer ' + token);
+
+        return new Promise((resolve, reject) => {
+            (fetch('https://confdevbc.mhfd.org/map', {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({ table: layer })
+            })
+                .then(resp => resp.json())
+                .catch(error => {
+                    reject(error);
+                })
+                .then(data => {
+                    if (!map.getSource(layer)) {
+                        map.addSource(layer, {
+                            type: 'vector',
+                            tiles: data
+                        });
+                    }
+                    const styles = { ...tileStyles as any };
+                    styles[layer].forEach((style: any, index: number) => {
+                        if (!map.getLayer(layer + '_' + index)) {
+                            map.addLayer({
+                                id: layer + '_' + index,
+                                source: layer,
+                                ...style
+                            });
+                        }
+                        //map.setLayoutProperty(layer + '_' + index, 'visibility', 'none');
+                    })
+                    resolve(data);
+                }))
+        })
+    }
+    const   loadFullSources = () => {
+        const promises: Promise<any>[] = [];
+        SELECT_ALL_FILTERS.forEach(layer => {
+            if (layer !== 'object') {
+                promises.push(loadSourceAndLayer(layer));
+            }
+        })
+        Promise.all(promises)
+            .then((data) => {
+                console.log('entro aqui del promise...', data);
+                mostrarLayers();
+            })
+    }
 
 
     const isMapLoaded = () => {
@@ -122,6 +175,7 @@ const MapLayout = () => {
     }
 
     useEffect(() => {
+        console.log('paso por iniciar =====>>>>   ')
         map = new Map({
             container: mapContainer.current!,
             style: 'mapbox://styles/mapbox/streets-v11',
@@ -129,10 +183,16 @@ const MapLayout = () => {
             zoom: 9,
             accessToken: 'pk.eyJ1IjoibWlsZWhpZ2hmZCIsImEiOiJjazRqZjg1YWQwZTN2M2RudmhuNXZtdWFyIn0.oU_jVFAr808WPbcVOFnzbg'
         })
+
+        // map.on('load', () => {
+        //     loadInitialLayer();
+        // })
+
         isMapLoaded()
             .then(data => {
                 if (data) {
-                    loadInitialLayer();
+                    loadFullSources();
+                    //loadInitialLayer();
                 }
             })
     }, [])
